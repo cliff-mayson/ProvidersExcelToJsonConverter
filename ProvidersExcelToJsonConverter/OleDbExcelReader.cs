@@ -1,45 +1,11 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.OleDb;
 using System.IO;
-using System.Linq;
-using LinqToExcel;
 
 namespace ProvidersExcelToJsonConverter
 {
-    public interface IExcelProvidersReader
-    {
-        List<Provider> GetProviderList(string excelFilePath); 
-    }
-
-    public class LinqExcelProvidersReader : IExcelProvidersReader
-    {
-        public List<Provider> GetProviderList(string excelFilePath)
-        {
-            var excel = new ExcelQueryFactory(excelFilePath);
-            var firstRow = excel.WorksheetNoHeader(0).First();
-            IOrderedQueryable<Provider> providers;
-
-            if (firstRow[0].Value.ToString() == "Item Title")
-            {
-                excel.AddMapping<Provider>(provider => provider.Item_Title, "Item Title");
-                providers = from provider in excel.Worksheet<Provider>(0)
-                            where provider.Item_Title != null && provider.Item_Title != string.Empty
-                            orderby provider.Item_Title descending
-                            select provider; 
-            }
-            else
-            {
-                providers = from provider in excel.Worksheet<Provider>(0)
-                            where provider.Item_Title != null && provider.Item_Title != string.Empty
-                            orderby provider.Item_Title descending
-                            select provider;
-            }
-            return providers.ToList();
-        }
-    }
-
     public class OleDbExcelReader : IExcelProvidersReader
     {
         public List<Provider> GetProviderList(string excelFilePath)
@@ -79,5 +45,4 @@ namespace ProvidersExcelToJsonConverter
             return dataTable.DataTableToList<Provider>();
         }
     }
-
 }

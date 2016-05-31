@@ -8,7 +8,7 @@ namespace ProvidersExcelToJsonConverter
     {
         private static void Main(string[] args)
         {
-            if (args != null && args[0] != null)
+            if (args != null && args.Length > 0 )
             {
                 var fullFileString = string.Format("{0}\\{1}", Directory.GetCurrentDirectory(), args[0]);
                 var outputFileName = string.Format("{0}\\{1}", Directory.GetCurrentDirectory(), "providers.json");
@@ -18,7 +18,9 @@ namespace ProvidersExcelToJsonConverter
                     var reader = new LinqExcelProvidersReader();
                     var providers = reader.GetProviderList(fullFileString);
 
-                    var json = JsonConvert.SerializeObject(providers, Formatting.Indented);
+                    var json = JsonConvert.SerializeObject(providers, Formatting.Indented, new JsonSerializerSettings { 
+                                NullValueHandling = NullValueHandling.Ignore
+                            });
 
                     File.WriteAllText(outputFileName, json);
                     Console.WriteLine("Conversion completed output to providers.json");
